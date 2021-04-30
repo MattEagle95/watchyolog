@@ -14,18 +14,13 @@ jobs:
       #
       # ... your other steps, such as running tests, etc...
       #
-      - name: SSH
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          script: |
-            mkdir -p ~/.ssh/
-            echo "$SSH_PRIVATE_KEY" > ./deploy.key
-            sudo chmod 600 ./deploy.key
-            echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_PRIVATE_KEY" > ./deploy.key
+          sudo chmod 600 ./deploy.key
+          echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+        shell: bash
         env:
           SSH_PRIVATE_KEY: ${{secrets.SSH_PRIVATE_KEY}}
           SSH_KNOWN_HOSTS: ${{secrets.SSH_KNOWN_HOSTS}}
