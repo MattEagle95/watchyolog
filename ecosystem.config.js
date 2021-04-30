@@ -21,7 +21,7 @@ module.exports = {
         host: '139.59.211.241',
         key: 'deploy.key',
         ref: 'origin/main',
-        repo: 'git@github.com:MattEagle95/watchyolog.git',
+        repo: 'https://github.com/MattEagle95/watchyolog',
         path: '/var/www/nodejs/watchyolog',
         'post-deploy':
           'npm install && pm2 reload ecosystem.config.js --env production && pm2 save && git checkout package-lock.json',
