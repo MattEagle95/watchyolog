@@ -23,7 +23,7 @@ module.exports = {
             repo: 'https://github.com/MattEagle95/watchyolog',
             path: '/var/www/nodejs/watchyolog',
             'post-deploy':
-                'pm2 startOrRestart ecosystem.config.js --env production; pm2 save',
+                'pm2 startOrRestart source/ecosystem.config.js --env production; pm2 save',
             env: {
                 NODE_ENV: 'production'
             },
