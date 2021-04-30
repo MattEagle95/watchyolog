@@ -30,7 +30,7 @@ jobs:
 
       - name: Deploy
         run: |
-          exec "git pull"
+          npx pm2 deploy ecosystem.config.js production exec "git pull"
           npx pm2 deploy ecosystem.config.js production
         # Or alternately, put this deploy script in your package.json's scripts and run it using yarn/npm:
         # run: yarn deploy
