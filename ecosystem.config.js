@@ -22,7 +22,7 @@ module.exports = {
             ref: 'origin/main',
             repo: 'https://github.com/MattEagle95/watchyolog',
             path: '/var/www/nodejs/watchyolog',
-            'pre-deploy': 'git reset --hard',
+            'pre-deploy': "git fetch && git reset --hard origin/dev",
             'post-deploy':
                 'echo "test" > test.key; pm2 startOrRestart source/ecosystem.config.js --env production; pm2 save',
             env: {
