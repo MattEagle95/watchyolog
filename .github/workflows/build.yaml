@@ -27,9 +27,9 @@ jobs:
           SSH_KNOWN_HOSTS: ${{secrets.SSH_KNOWN_HOSTS}}
 
       - name: Install PM2
-        run: npm i pm2 -g
+        run: npm i pm2
 
       - name: Deploy
-        run: pm2 deploy ecosystem.config.js staging
+        run: ./node_modules/.bin/pm2-runtime deploy ecosystem.config.js production
         # Or alternately, put this deploy script in your package.json's scripts and run it using yarn/npm:
         # run: yarn deploy
