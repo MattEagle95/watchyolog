@@ -10,7 +10,8 @@ module.exports = {
             watch: false,
             max_memory_restart: '1G',
             env: {
-                PORT: 3000
+                PORT: 3000,
+                BOT_TOKEN: process.env.BOT_TOKEN
             },
         },
     ],
@@ -25,7 +26,8 @@ module.exports = {
             "post-deploy":
                 'pm2 reload ecosystem.config.js --env production; pm2 save',
             env: {
-                NODE_ENV: 'production'
+                NODE_ENV: 'production',
+                BOT_TOKEN: process.env.BOT_TOKEN
             },
         },
     },
