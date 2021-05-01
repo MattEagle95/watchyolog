@@ -5,6 +5,8 @@ const fs = require("fs");
 const client = new Discord.Client();
 const prefix = "!";
 
+const logProcesses = [];
+
 
 client.login(process.env.BOT_TOKEN, {
     presence: {
@@ -34,8 +36,10 @@ pm2.launchBus(function (err, bus) {
     })
 
     bus.on('log:out', function (packet) {
-        const channel = client.channels.cache.find(channel => channel.name === 'log');
-        channel.send(`LOG: ${packet.process.name}: ${packet.data}`);
+        if (logProcesses.indexOf(packet.process.name.trim()) !== -1) {
+            const channel = client.channels.cache.find(channel => channel.name === `log-${packet.process.name.trim()}`);
+            channel.send(`LOG: ${packet.process.name}: ${packet.data}`);
+        }
     })
 
     bus.on('log:err', function (packet) {
@@ -94,9 +98,10 @@ name: ${desc.name}
     }
 
     if (command === "log") {
-        message.guild.channels.create(`log-${args[0]}`, { type: 'text' })
+        logProcesses.push(args[0].trim());
+        message.guild.channels.create(`log-${args[0].trim()}`, { type: 'text' })
             .then(channel => {
-                let category = message.guild.channels.cache.find(c => c.name == "DEV-SERVER" && c.type == "category");
+                let category = message.guild.channels.cache.find(c => c.name == "dev-server" && c.type == "category");
 
                 if (!category) throw new Error("Category channel does not exist");
                 channel.setParent(category.id);
