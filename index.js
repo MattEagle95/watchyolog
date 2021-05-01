@@ -12,8 +12,7 @@ client.login(process.env.BOT_TOKEN);
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
-    client.user.setPresence({ game: { name: 'with discord.js' }, status: 'idle' });
-
+    client.user.setPresence({ activity: { name: 'with discord.js', type: 'WATCHING' }, status: 'online' });
     const channel = client.channels.cache.find(channel => channel.name === 'general');
     channel.send(`I AM BACK!`);
 });
@@ -76,7 +75,7 @@ client.on("message", function (message) {
                 console.error(err);
             }
 
-            pm2.reload(args[0].trim());
+            pm2.reload(args[0].trim(), (err) => { });
         });
     }
 
@@ -113,8 +112,10 @@ name: ${desc.name}
 });
 
 client.on("channelDelete", function (channel) {
-    console.log(`channelDelete: ${channel.id}`);
-    console.log(JSON.stringify(channel));
+    console.log(`channelDelete: ${channel.name}`);
+    if (logProcesses.indexOf(channel.name) !== -1) {
+        logProcesses.splice(logProcesses.indexOf(channel.name), 1);
+    }
 });
 
 function timeDifference(current, previous) {
