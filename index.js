@@ -94,7 +94,8 @@ name: ${desc.name}
     }
 
     if (command === "log") {
-        client.channels.cache.create("log:" + args[0])
+        client.guilds.cache[0]
+        client.guilds.cache[0].create("log:" + args[0])
             .then(channel => {
                 let category = client.channels.cache.find(c => c.name == "DEV-SERVER" && c.type == "category");
 
