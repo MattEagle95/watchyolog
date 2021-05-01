@@ -8,18 +8,11 @@ const prefix = "!";
 const logProcesses = [];
 
 
-client.login(process.env.BOT_TOKEN, {
-    presence: {
-        status: 'online',
-        activity: {
-            name: 'ya logs!',
-            type: 'STREAMING',
-        },
-    },
-});
+client.login(process.env.BOT_TOKEN);
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
+    client.user.setPresence({ game: { name: 'with discord.js' }, status: 'idle' });
 
     const channel = client.channels.cache.find(channel => channel.name === 'general');
     channel.send(`I AM BACK!`);
@@ -76,6 +69,16 @@ client.on("message", function (message) {
             })
         });
     }
+
+    if (command === "reload") {
+        pm2.connect(function (err) {
+            if (err) {
+                console.error(err);
+            }
+
+            pm2.reload(args[0].trim());
+        });
+    } 
 
     if (command === "describe") {
         pm2.connect(function (err) {
