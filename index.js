@@ -6,18 +6,18 @@ const client = new Discord.Client();
 const prefix = "!";
 
 
-client.login(process.env.BOT_TOKEN);
+client.login(process.env.BOT_TOKEN, {
+    presence: {
+        status: 'online',
+        activity: {
+            name: 'ya logs!',
+            type: 'STREAMING',
+        },
+    },
+});
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
-
-    client.user.setStatus('available')
-    client.user.setPresence({
-        game: {
-            name: 'ya logs!',
-            type: "STREAMING"
-        }
-    });
 
     const channel = client.channels.cache.find(channel => channel.name === 'general');
     channel.send(`I AM BACK!`);
@@ -94,9 +94,9 @@ name: ${desc.name}
     }
 
     if (command === "log") {
-        server.channels.create("log:" + args[0])
+        client.channels.create("log:" + args[0])
             .then(channel => {
-                let category = server.channels.cache.find(c => c.name == "DEV-SERVER" && c.type == "category");
+                let category = client.channels.cache.find(c => c.name == "DEV-SERVER" && c.type == "category");
 
                 if (!category) throw new Error("Category channel does not exist");
                 channel.setParent(category.id);
