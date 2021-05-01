@@ -6,6 +6,17 @@ const prefix = "!";
 
 client.login(process.env.BOT_TOKEN);
 
+pm2.launchBus(function (err, bus) {
+    if (err) {
+        console.error(err)
+    }
+
+    bus.on('process', function (packet) {
+        const channel = client.channels.cache.get('general');
+        channel.message(`${packet.data} ${packet.process.name}`);
+    })
+})
+
 client.on("message", function (message) {
     if (message.author.bot) return;
     if (!message.content.startsWith(prefix)) return;
@@ -24,16 +35,16 @@ client.on("message", function (message) {
             if (err) {
                 console.error(err);
             }
-        
+
             pm2.list((err, list) => {
                 let output = "";
 
-                output += `${list.filter(x => x.pm2_env.status === 'online').length}/${list.length} online`;
-        
+                output += `${list.filter(x => x.pm2_env.status === 'online').length}/${list.length} online\n`;
+
                 list.forEach(process => {
-                    output += `${process.name} ${timeDifference(process.pm2_env.pm_uptime)} ${process.pm2_env.unstable_restarts} ${process.pm2_env.status} \n`;
+                    output += `${process.name} ${timeDifference(Date.now(), process.pm2_env.pm_uptime)} ${process.pm2_env.unstable_restarts} ${process.pm2_env.status} \n`;
                 })
-        
+
                 message.reply(output);
                 console.log(err, list);
             })
@@ -52,26 +63,26 @@ function timeDifference(current, previous) {
     var elapsed = current - previous;
 
     if (elapsed < msPerMinute) {
-         return Math.round(elapsed/1000) + ' seconds ago';   
+        return Math.round(elapsed / 1000) + ' seconds ago';
     }
 
     else if (elapsed < msPerHour) {
-         return Math.round(elapsed/msPerMinute) + ' minutes ago';   
+        return Math.round(elapsed / msPerMinute) + ' minutes ago';
     }
 
-    else if (elapsed < msPerDay ) {
-         return Math.round(elapsed/msPerHour ) + ' hours ago';   
+    else if (elapsed < msPerDay) {
+        return Math.round(elapsed / msPerHour) + ' hours ago';
     }
 
     else if (elapsed < msPerMonth) {
-        return 'approximately ' + Math.round(elapsed/msPerDay) + ' days ago';   
+        return 'approximately ' + Math.round(elapsed / msPerDay) + ' days ago';
     }
 
     else if (elapsed < msPerYear) {
-        return 'approximately ' + Math.round(elapsed/msPerMonth) + ' months ago';   
+        return 'approximately ' + Math.round(elapsed / msPerMonth) + ' months ago';
     }
 
     else {
-        return 'approximately ' + Math.round(elapsed/msPerYear ) + ' years ago';   
+        return 'approximately ' + Math.round(elapsed / msPerYear) + ' years ago';
     }
 }
