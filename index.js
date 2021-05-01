@@ -11,7 +11,20 @@ pm2.launchBus(function (err, bus) {
         console.error(err)
     }
 
+    bus.on('process:event', function (packet) {
+        console.log(`process:event ${packet.data} ${packet.process.name}`)
+        const channel = client.channels.cache.get('general');
+        channel.message(`${packet.data} ${packet.process.name}`);
+    })
+
     bus.on('process', function (packet) {
+        console.log(`process ${packet.data} ${packet.process.name}`)
+        const channel = client.channels.cache.get('general');
+        channel.message(`${packet.data} ${packet.process.name}`);
+    })
+
+    bus.on('log:out', function (packet) {
+        console.log(`log:out ${packet.data} ${packet.process.name}`)
         const channel = client.channels.cache.get('general');
         channel.message(`${packet.data} ${packet.process.name}`);
     })
@@ -42,7 +55,7 @@ client.on("message", function (message) {
                 output += `${list.filter(x => x.pm2_env.status === 'online').length}/${list.length} online\n`;
 
                 list.forEach(process => {
-                    output += `${process.name} ${timeDifference(Date.now(), process.pm2_env.pm_uptime)} ${process.pm2_env.unstable_restarts} ${process.pm2_env.status} \n`;
+                    output += `${process.name} ${timeDifference(Date.now(), process.pm2_env.pm_uptime)} ${process.pm2_env.status} \n`;
                 })
 
                 message.reply(output);
