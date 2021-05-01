@@ -11,6 +11,14 @@ client.login(process.env.BOT_TOKEN);
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
 
+    client.user.setStatus('available')
+    client.user.setPresence({
+        game: {
+            name: 'ya logs!',
+            type: "STREAMING"
+        }
+    });
+
     const channel = client.channels.cache.find(channel => channel.name === 'general');
     channel.send(`I AM BACK!`);
 });
@@ -32,7 +40,7 @@ pm2.launchBus(function (err, bus) {
 
     bus.on('log:err', function (packet) {
         const channel = client.channels.cache.find(channel => channel.name === 'error-log');
-        channel.send(`LOG: ${packet.process.name}: ${packet.data}`);
+        channel.send(`ERROR: ${packet.process.name}: ${packet.data}`);
     })
 })
 
@@ -74,7 +82,7 @@ client.on("message", function (message) {
             pm2.describe(args[0], (err, desc) => {
                 desc = desc[0]
                 let output = `
-args: ${args[0]} ${args[1]}
+args: ${args[0]}
 pid: ${desc.pid}
 pm_id: ${desc.pm_id}
 name: ${desc.name}
@@ -83,6 +91,16 @@ name: ${desc.name}
                 message.reply(output);
             })
         });
+    }
+
+    if (command === "log") {
+        server.channels.create("log:" + args[0])
+            .then(channel => {
+                let category = server.channels.cache.find(c => c.name == "DEV-SERVER" && c.type == "category");
+
+                if (!category) throw new Error("Category channel does not exist");
+                channel.setParent(category.id);
+            }).catch(console.error);
     }
 });
 

@@ -1,7 +1,7 @@
 setInterval(() => {
-    console.log('test');
-}, 8000);
+    console.log('a log message');
+}, 30000);
 
 setInterval(() => {
-    console.error('test');
-}, 10000);
+    console.error('an error message!');
+}, 60000);
