@@ -13,20 +13,20 @@ pm2.launchBus(function (err, bus) {
 
     bus.on('process:event', function (packet) {
         console.log(`process:event ${packet.data} ${packet.process.name}`)
-        const channel = client.channels.cache.get('general');
-        channel.message(`${packet.data} ${packet.process.name}`);
+        const channel = client.channels.cache.find(channel => channel.name === 'general');
+        channel.send(`${packet.data} ${packet.process.name}`);
     })
 
     bus.on('process', function (packet) {
         console.log(`process ${packet.data} ${packet.process.name}`)
-        const channel = client.channels.cache.get('general');
-        channel.message(`${packet.data} ${packet.process.name}`);
+        const channel = client.channels.cache.find(channel => channel.name === 'general');
+        channel.send(`${packet.data} ${packet.process.name}`);
     })
 
     bus.on('log:out', function (packet) {
         console.log(`log:out ${packet.data} ${packet.process.name}`)
-        const channel = client.channels.cache.get('general');
-        channel.message(`${packet.data} ${packet.process.name}`);
+        const channel = client.channels.cache.find(channel => channel.name === 'general');
+        channel.send(`${packet.data} ${packet.process.name}`);
     })
 })
 
@@ -55,7 +55,7 @@ client.on("message", function (message) {
                 output += `${list.filter(x => x.pm2_env.status === 'online').length}/${list.length} online\n`;
 
                 list.forEach(process => {
-                    output += `${process.name} ${timeDifference(Date.now(), process.pm2_env.pm_uptime)} ${process.pm2_env.status} \n`;
+                    output += `*${process.name}* - ${process.pm2_env.status} - ${timeDifference(Date.now(), process.pm2_env.pm_uptime)}\n`;
                 })
 
                 message.reply(output);
@@ -76,15 +76,15 @@ function timeDifference(current, previous) {
     var elapsed = current - previous;
 
     if (elapsed < msPerMinute) {
-        return Math.round(elapsed / 1000) + ' seconds ago';
+        return Math.round(elapsed / 1000) + ' seconds';
     }
 
     else if (elapsed < msPerHour) {
-        return Math.round(elapsed / msPerMinute) + ' minutes ago';
+        return Math.round(elapsed / msPerMinute) + ' minutes';
     }
 
     else if (elapsed < msPerDay) {
-        return Math.round(elapsed / msPerHour) + ' hours ago';
+        return Math.round(elapsed / msPerHour) + ' hours';
     }
 
     else if (elapsed < msPerMonth) {
