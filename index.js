@@ -39,10 +39,6 @@ client.on("message", function (message) {
 
     if (command === "list") {
         pm2.connect(function (err) {
-            if (err) {
-                console.error(err);
-            }
-
             pm2.list((err, list) => {
                 let output = "";
 
@@ -53,7 +49,6 @@ client.on("message", function (message) {
                 })
 
                 message.reply(output);
-                console.log(err, list);
             })
         });
     }
@@ -72,7 +67,6 @@ client.on("message", function (message) {
                 `;
 
                 message.reply(output);
-                console.log(err, list);
             })
         });
     }
