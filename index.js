@@ -1,10 +1,19 @@
 const Discord = require("discord.js");
 const pm2 = require('pm2')
+const fs = require("fs");
 
 const client = new Discord.Client();
 const prefix = "!";
 
+
 client.login(process.env.BOT_TOKEN);
+
+client.on('ready', () => {
+    console.log(`Logged in as ${client.user.tag}!`);
+
+    const channel = client.channels.cache.find(channel => channel.name === 'general');
+    channel.send(`I AM BACK!`);
+});
 
 pm2.launchBus(function (err, bus) {
     if (err) {
@@ -17,8 +26,13 @@ pm2.launchBus(function (err, bus) {
     })
 
     bus.on('log:out', function (packet) {
-        const channel = client.channels.cache.find(channel => channel.name === 'general');
-        channel.send(`log:out ${packet.process.name}`);
+        const channel = client.channels.cache.find(channel => channel.name === 'log');
+        channel.send(`LOG: ${packet.process.name}: ${packet.data}`);
+    })
+
+    bus.on('log:err', function (packet) {
+        const channel = client.channels.cache.find(channel => channel.name === 'error-log');
+        channel.send(`LOG: ${packet.process.name}: ${packet.data}`);
     })
 })
 
