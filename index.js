@@ -94,10 +94,9 @@ name: ${desc.name}
     }
 
     if (command === "log") {
-        client.guilds.cache[0]
-        client.guilds.cache[0].create("log:" + args[0])
+        message.guild.channels.create(`log-${args[0]}`, { type: 'text' })
             .then(channel => {
-                let category = client.channels.cache.find(c => c.name == "DEV-SERVER" && c.type == "category");
+                let category = message.guild.channels.cache.find(c => c.name == "DEV-SERVER" && c.type == "category");
 
                 if (!category) throw new Error("Category channel does not exist");
                 channel.setParent(category.id);
