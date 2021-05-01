@@ -22,12 +22,17 @@ client.on("message", function (message) {
     if (command === "list") {
         pm2.connect(function (err) {
             if (err) {
-                message.reply(`⚠ Fehler: ${err.message}`);
                 console.error(err);
             }
-
+        
             pm2.list((err, list) => {
-                message.reply(list);
+                let output = "";
+        
+                list.forEach(process => {
+                    output += `${process.name} ${process.pm2_env.pm_uptime} ${process.pm2_env.status} \n`;
+                })
+        
+                message.reply(output);
                 console.log(err, list);
             })
         });
