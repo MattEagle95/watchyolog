@@ -1,4 +1,5 @@
 const Discord = require("discord.js");
+const pm2 = require('pm2')
 
 const client = new Discord.Client();
 const prefix = "!";
@@ -15,7 +16,20 @@ client.on("message", function (message) {
 
     if (command === "ping") {
         const timeTaken = Date.now() - message.createdTimestamp;
-        message.reply(`Pong! This message had a latency of ${timeTaken}ms. API Latency is ${Math.round(client.ws.ping)}ms`);
-        message.reply(`⚠ Warnung`);
+        message.reply(`Pong! This message had a latency of ${timeTaken}ms`);
+    }
+
+    if (command === "list") {
+        pm2.connect(function (err) {
+            if (err) {
+                message.reply(`⚠ Fehler: ${err.message}`);
+                console.error(err);
+            }
+
+            pm2.list((err, list) => {
+                message.reply(list);
+                console.log(err, list);
+            })
+        });
     }
 });
