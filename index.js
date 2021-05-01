@@ -46,11 +46,30 @@ client.on("message", function (message) {
             pm2.list((err, list) => {
                 let output = "";
 
-                output += `${list.filter(x => x.pm2_env.status === 'online').length}/${list.length} online\n`;
+                output += `${list.filter(x => x.pm2_env.status === 'online').length}/${list.length} online\n\n`;
 
                 list.forEach(process => {
-                    output += `*${process.name}* - ${process.pm2_env.status} - ${timeDifference(Date.now(), process.pm2_env.pm_uptime)}\n`;
+                    output += `**${process.name}** - ${process.pm2_env.status} - ${timeDifference(Date.now(), process.pm2_env.pm_uptime)}\n`;
                 })
+
+                message.reply(output);
+                console.log(err, list);
+            })
+        });
+    }
+
+    if (command === "describe") {
+        pm2.connect(function (err) {
+            if (err) {
+                console.error(err);
+            }
+
+            pm2.describe(args[0], (err, desc) => {
+                let output = `
+                pid: ${desc.pid}
+                pm_id: ${desc.pm_id}
+                name: ${desc.name}
+                `;
 
                 message.reply(output);
                 console.log(err, list);
