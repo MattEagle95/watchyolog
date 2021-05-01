@@ -78,7 +78,7 @@ client.on("message", function (message) {
 
             pm2.reload(args[0].trim());
         });
-    } 
+    }
 
     if (command === "describe") {
         pm2.connect(function (err) {
@@ -110,6 +110,11 @@ name: ${desc.name}
                 channel.setParent(category.id);
             }).catch(console.error);
     }
+});
+
+client.on("channelDelete", function (channel) {
+    console.log(`channelDelete: ${channel.id}`);
+    console.log(JSON.stringify(channel));
 });
 
 function timeDifference(current, previous) {
