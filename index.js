@@ -59,7 +59,7 @@ client.on("message", function (message) {
                 console.error(err);
             }
 
-            pm2.describe(args[0], (err, desc) => {
+            pm2.describe(args[1], (err, desc) => {
                 let output = `
                 pid: ${desc.pid}
                 pm_id: ${desc.pm_id}
