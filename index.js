@@ -12,19 +12,13 @@ pm2.launchBus(function (err, bus) {
     }
 
     bus.on('process:event', function (packet) {
-        console.log(`process:event ${packet.data} ${packet.process.name}`)
-        const channel = client.channels.cache.find(channel => channel.name === 'general');
-        channel.send(`${packet.data} ${packet.process.name}`);
-    })
-
-    bus.on('process', function (packet) {
-        console.log(`process ${packet.data} ${packet.process.name}`)
+        console.log(`process:event ${packet.process.name}`)
         const channel = client.channels.cache.find(channel => channel.name === 'general');
         channel.send(`${packet.data} ${packet.process.name}`);
     })
 
     bus.on('log:out', function (packet) {
-        console.log(`log:out ${packet.data} ${packet.process.name}`)
+        console.log(`log:out ${packet.process.name}`)
         const channel = client.channels.cache.find(channel => channel.name === 'general');
         channel.send(`${packet.data} ${packet.process.name}`);
     })
