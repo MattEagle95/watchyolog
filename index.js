@@ -1,11 +1,10 @@
 const Discord = require("discord.js");
-const { env } = require("node:process");
 const config = require("./config.json");
 
 const client = new Discord.Client();
 const prefix = "!";
 
-client.login(env.process.BOT_TOKEN);
+client.login(process.env.BOT_TOKEN);
 
 client.on("message", function (message) {
     if (message.author.bot) return;
