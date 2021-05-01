@@ -60,6 +60,7 @@ client.on("message", function (message) {
             }
 
             pm2.describe(args[0], (err, desc) => {
+                desc = desc[0]
                 let output = `
 args: ${args[0]} ${args[1]}
 pid: ${desc.pid}
