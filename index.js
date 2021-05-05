@@ -93,10 +93,15 @@ name: ${desc.name}
                 output += `${list.filter(x => x.pm2_env.status === 'online').length}/${list.length} online\n\n`;
 
                 const rows = [];
-                rows.push(["PM_ID", "NAME", "STATUS", "ONLINE SINCE"])
+                rows.push(["", "PM_ID", "NAME", "STATUS", "ONLINE SINCE"])
 
                 list.forEach(process => {
-                    rows.push([process.pm_id, process.name.trim().toString(), process.pm2_env.status.trim().toString(), timeDifference(Date.now(), process.pm2_env.pm_uptime)]);
+                    let symbol = ':green_circle:';
+                    if(process.pm2_env.status !== 'online') {
+                        symbol = ':red_circle:';
+                    }
+
+                    rows.push([symbol, process.pm_id, process.name, process.pm2_env.status, timeDifference(Date.now(), process.pm2_env.pm_uptime)]);
                 })
 
                 output += table(rows);
@@ -112,7 +117,13 @@ name: ${desc.name}
                 console.error(err);
             }
 
-            pm2.restart(args[0].trim(), (err) => { console.error(err); });
+            pm2.restart(args[0].trim(), (err) => { 
+                if (err) {
+                    console.error(err);
+                }
+
+                message.reply(`restarting...`);
+             });
         });
     }
 
@@ -122,7 +133,13 @@ name: ${desc.name}
                 console.error(err);
             }
 
-            pm2.reload(args[0].trim(), (err) => { console.error(err); });
+            pm2.reload(args[0].trim(), (err) => {
+                if (err) {
+                    console.error(err);
+                }
+
+                message.reply(`reloading...`);
+            });
         });
     }
 
@@ -134,7 +151,13 @@ name: ${desc.name}
                 console.error(err);
             }
 
-            pm2.stop(args[0].trim(), (err) => { console.error(err); });
+            pm2.stop(args[0].trim(), (err) => { 
+                if (err) {
+                    console.error(err);
+                }
+
+                message.reply(`stopping...`);
+             });
         });
     }
 
