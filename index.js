@@ -2,7 +2,6 @@ const Discord = require("discord.js");
 const pm2 = require('pm2');
 const fs = require('fs');
 const table = require('text-table');
-const config = require('./config.json');
 const Commands = { restart: "restart", reload: "reload", stop: "stop", list: "list", describe: "describe", delete: "delete", flush: "flush", reloadLogs: "reloadLogs" }
 
 const client = new Discord.Client();
@@ -124,14 +123,17 @@ client.on("message", function (message) {
     }
 
     if (command === "config") {
-        const guildConfig = config.guilds.find(guild => guild.id === message.guild.id);
-        const rows = [];
-        rows.push(['COMMAND_PREFIX', guildConfig.command_prefix]);
-        rows.push(['EVENT_CHANNEL', guildConfig.event_channel]);
-        rows.push(['ERROR_LOG_CHANNEL', guildConfig.error_log_channel]);
-        rows.push(['LOG_CHANNEL_CATEGORY', guildConfig.log_category]);
+        fs.readFile('./config.json', 'utf8', function readFileCallback(err, data) {
+            const guildConfig = data.guilds.find(guild => guild.id === message.guild.id);
 
-        message.reply(`\`\`\`\n${table(rows)}\`\`\``);
+            const rows = [];
+            rows.push(['COMMAND_PREFIX', guildConfig.command_prefix]);
+            rows.push(['EVENT_CHANNEL', guildConfig.event_channel]);
+            rows.push(['ERROR_LOG_CHANNEL', guildConfig.error_log_channel]);
+            rows.push(['LOG_CHANNEL_CATEGORY', guildConfig.log_category]);
+
+            message.reply(`\`\`\`\n${table(rows)}\`\`\``);
+        });
     }
 
     if (command === "configSet") {
