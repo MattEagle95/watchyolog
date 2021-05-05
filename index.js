@@ -1,7 +1,7 @@
 const Discord = require("discord.js");
 const pm2 = require('pm2');
 const table = require('text-table');
-const Commands = { restart: "restart", reload: "reload", stop: "stop", list: "list", describe: "describe" }
+const Commands = { restart: "restart", reload: "reload", stop: "stop", list: "list", describe: "describe", delete: "delete", flush: "flush", reloadLogs: "reloadLogs" }
 
 const client = new Discord.Client();
 const prefix = "!";
@@ -166,14 +166,16 @@ client.on("message", function (message) {
                 console.error(err);
             }
 
+            const name = args[0].trim();
+
             message.reply(`:tools: restarting...`);
 
-            pm2.restart(args[0].trim(), (err) => {
+            pm2.restart(name, (err) => {
                 if (err) {
                     console.error(err);
                 }
 
-                message.reply(`:green_circle: ${args[0].trim()} restarted`);
+                message.reply(`:green_circle: ${name} restarted...`);
             });
         });
     }
@@ -184,15 +186,17 @@ client.on("message", function (message) {
                 console.error(err);
             }
 
+            const name = args[0].trim();
+
             message.reply(`:tools: reloading...`);
 
-            pm2.reload(args[0].trim(), (err) => {
+            pm2.reload(name, (err) => {
                 if (err) {
                     console.error(err);
                     return;
                 }
 
-                message.reply(`:green_circle: ${args[0].trim()} reloaded`);
+                message.reply(`:green_circle: ${name} reloaded...`);
             });
         });
     }
@@ -205,15 +209,84 @@ client.on("message", function (message) {
                 console.error(err);
             }
 
+            const name = args[0].trim();
+
             message.reply(`:tools: stopping...`);
 
-            pm2.stop(args[0].trim(), (err) => {
+            pm2.stop(name, (err) => {
                 if (err) {
                     console.error(err);
                     return;
                 }
 
-                message.reply(`:green_circle: ${args[0].trim()} stopped`);
+                message.reply(`:green_circle: ${name} stopped...`);
+            });
+        });
+    }
+
+    if (command === Commands.delete) {
+        console.log('deleting');
+
+        pm2.connect(function (err) {
+            if (err) {
+                console.error(err);
+            }
+
+            const name = args[0].trim();
+
+            message.reply(`:tools: deleting...`);
+
+            pm2.delete(name, (err) => {
+                if (err) {
+                    console.error(err);
+                    return;
+                }
+
+                message.reply(`:green_circle: ${name} deleted...`);
+            });
+        });
+    }
+
+    if (command === Commands.flush) {
+        console.log('flushing');
+
+        pm2.connect(function (err) {
+            if (err) {
+                console.error(err);
+            }
+
+            const name = args[0].trim();
+
+            message.reply(`:tools: flushing...`);
+
+            pm2.flush(name, (err) => {
+                if (err) {
+                    console.error(err);
+                    return;
+                }
+
+                message.reply(`:green_circle: ${name} logs flushed...`);
+            });
+        });
+    }
+
+    if (command === Commands.reloadLogs) {
+        console.log('reloading logs');
+
+        pm2.connect(function (err) {
+            if (err) {
+                console.error(err);
+            }
+
+            message.reply(`:tools: reloading logs...`);
+
+            pm2.reloadLogs((err) => {
+                if (err) {
+                    console.error(err);
+                    return;
+                }
+
+                message.reply(`:green_circle: logs reloaded...`);
             });
         });
     }
