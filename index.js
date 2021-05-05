@@ -93,10 +93,10 @@ name: ${desc.name}
                 output += `${list.filter(x => x.pm2_env.status === 'online').length}/${list.length} online\n\n`;
 
                 const rows = [];
-                rows.push(["PID", "NAME", "STATUS", "ONLINE SINCE"])
+                rows.push(["PM_ID", "NAME", "STATUS", "ONLINE SINCE"])
 
                 list.forEach(process => {
-                    rows.push([process.pid, process.name, process.pm2_env.status, timeDifference(Date.now(), process.pm2_env.pm_uptime)]);
+                    rows.push([process.pm_id.trim().toString(), process.name.trim().toString(), process.pm2_env.status.trim().toString(), timeDifference(Date.now(), process.pm2_env.pm_uptime)]);
                 })
 
                 output += table(rows);
