@@ -1,5 +1,6 @@
 const Discord = require("discord.js");
 const pm2 = require('pm2');
+const fs = require('fs');
 const table = require('text-table');
 const config = require('./config.json');
 const Commands = { restart: "restart", reload: "reload", stop: "stop", list: "list", describe: "describe", delete: "delete", flush: "flush", reloadLogs: "reloadLogs" }
