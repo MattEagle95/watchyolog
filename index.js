@@ -96,19 +96,25 @@ name: ${desc.name}
                 rows.push(["PM_ID", "NAME", "STATUS", "ONLINE SINCE", "CPU USED", "RAM USED"])
 
                 list.forEach(process => {
+
+                    let statusPrefix = "+";
+                    if(process.pm2_env.status !== 'online') {
+                        statusPrefix = "-";
+                    }
+
                     rows.push([
                         process.pm_id,
                         process.name,
-                        process.pm2_env.status,
+                        `${statusPrefix} ${process.pm2_env.status}`,
                         timeDifference(Date.now(), process.pm2_env.pm_uptime),
-                        process.monit.cpu,
-                        process.monit.memory
+                        `${process.monit.cpu} %`,
+                        formatBytes(process.monit.memory)
                     ]);
                 })
 
                 output += table(rows);
 
-                message.reply(`\`\`\`${output}\`\`\``);
+                message.reply(`\`\`\`diff\n${output}\`\`\``);
             })
         });
     }
@@ -154,7 +160,7 @@ name: ${desc.name}
             if (err) {
                 console.error(err);
             }
-            
+
             message.reply(`stopping...`);
 
             pm2.stop(args[0].trim(), (err) => { 
@@ -186,7 +192,6 @@ client.on("channelDelete", function (channel) {
 });
 
 function timeDifference(current, previous) {
-
     var msPerMinute = 60 * 1000;
     var msPerHour = msPerMinute * 60;
     var msPerDay = msPerHour * 24;
@@ -218,4 +223,16 @@ function timeDifference(current, previous) {
     else {
         return 'approximately ' + Math.round(elapsed / msPerYear) + ' years ago';
     }
+}
+
+function formatBytes(bytes, decimals = 2) {
+    if (bytes === 0) return '0 Bytes';
+
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
