@@ -75,6 +75,8 @@ client.on("message", function (message) {
                 try {
                     desc = desc[0];
 
+                    message.reply(`\`\`\`json\n${JSON.stringify(desc)}\`\`\``);
+
                     let status = `\"${desc.pm2_env.status}\"`;
                     if (desc.pm2_env.status !== 'online') {
                         status = `\'${desc.pm2_env.status}\'`;
