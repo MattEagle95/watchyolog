@@ -1,18 +1,25 @@
-const Discord = require("discord.js");
-const pm2 = require('pm2')
-const fs = require("fs");
+import Discord from "discord.js";
+import pm2 from 'pm2';
+import { markdownTable } from "markdown-table";
+const Commands = Object.freeze({ "restart": {}, "reload": {}, "stop": {}, "list": {}, "describe": {} })
 
 const client = new Discord.Client();
 const prefix = "!";
 
 const logProcesses = [];
 
-
 client.login(process.env.BOT_TOKEN);
+
+console.log(markdownTable([
+    ['Branch', 'Commit'],
+    ['main', '0123456789abcdef'],
+    ['staging', 'fedcba9876543210']
+]));
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
     client.user.setPresence({ activity: { name: 'with discord.js', type: 'WATCHING' }, status: 'online' });
+
     const channel = client.channels.cache.find(channel => channel.name === 'general');
     channel.send(`I AM BACK!`);
 });
@@ -30,13 +37,13 @@ pm2.launchBus(function (err, bus) {
     bus.on('log:out', function (packet) {
         if (logProcesses.indexOf(packet.process.name.trim()) !== -1) {
             const channel = client.channels.cache.find(channel => channel.name === `log-${packet.process.name.trim()}`);
-            channel.send(`LOG: ${packet.process.name}: ${packet.data}`);
+            channel.send(`${packet.process.name}: ${packet.data}`);
         }
     })
 
     bus.on('log:err', function (packet) {
         const channel = client.channels.cache.find(channel => channel.name === 'error-log');
-        channel.send(`ERROR: ${packet.process.name}: ${packet.data}`);
+        channel.send(`${packet.process.name}: ${packet.data}`);
     })
 })
 
@@ -53,33 +60,18 @@ client.on("message", function (message) {
         message.reply(`Pong! This message had a latency of ${timeTaken}ms`);
     }
 
-    if (command === "list") {
-        pm2.connect(function (err) {
-            pm2.list((err, list) => {
-                let output = "";
-
-                output += `${list.filter(x => x.pm2_env.status === 'online').length}/${list.length} online\n\n`;
-
-                list.forEach(process => {
-                    output += `**${process.name}** - ${process.pm2_env.status} - ${timeDifference(Date.now(), process.pm2_env.pm_uptime)}\n`;
-                })
-
-                message.reply(output);
-            })
-        });
+    if (command === "help") {
+        message.reply(`
+**Help**
+!ping - returns the latency
+!commands - show available commands
+!list - pm2 list
+!describe - pm2 describe
+!reload - pm2 reload
+        `);
     }
 
-    if (command === "reload") {
-        pm2.connect(function (err) {
-            if (err) {
-                console.error(err);
-            }
-
-            pm2.reload(args[0].trim(), (err) => { });
-        });
-    }
-
-    if (command === "describe") {
+    if (command === Commands.describe) {
         pm2.connect(function (err) {
             if (err) {
                 console.error(err);
@@ -96,6 +88,58 @@ name: ${desc.name}
 
                 message.reply(output);
             })
+        });
+    }
+
+    if (command === Commands.list) {
+        pm2.connect(function (err) {
+            pm2.list((err, list) => {
+                let output = "";
+
+                output += `${list.filter(x => x.pm2_env.status === 'online').length}/${list.length} online\n\n`;
+
+                const rows = [];
+
+                list.forEach(process => {
+                    rows.push(process.name, process.pm2_env.status, timeDifference(Date.now(), process.pm2_env.pm_uptime));
+                })
+
+                output += markdownTable(rows);
+
+                message.reply(output);
+            })
+        });
+    }
+
+    if (command === Commands.restart) {
+        pm2.connect(function (err) {
+            if (err) {
+                console.error(err);
+            }
+
+            pm2.restart(args[0].trim(), (err) => { console.error(err); });
+        });
+    }
+
+    if (command === Commands.reload) {
+        pm2.connect(function (err) {
+            if (err) {
+                console.error(err);
+            }
+
+            pm2.reload(args[0].trim(), (err) => { console.error(err); });
+        });
+    }
+
+    if (command === Commands.stop) {
+        console.log('stopping');
+
+        pm2.connect(function (err) {
+            if (err) {
+                console.error(err);
+            }
+
+            pm2.stop(args[0].trim(), (err) => { console.error(err); });
         });
     }
 

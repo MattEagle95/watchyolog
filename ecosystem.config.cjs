@@ -24,7 +24,7 @@ module.exports = {
             repo: 'https://github.com/MattEagle95/watchyolog',
             path: '/var/www/nodejs/watchyolog',
             "post-deploy":
-                'npm install; pm2 reload ecosystem.config.js --env production; pm2 save',
+                'npm install; pm2 reload ecosystem.config.cjs --env production; pm2 save',
             env: {
                 NODE_ENV: 'production',
                 BOT_TOKEN: process.env.BOT_TOKEN

@@ -1,8 +1,3 @@
 node_modules/
-.ssh/
-~/.ssh
-.git/
-.github/
-deploy.key
-./deploy.key
 .env
+deploy.key
