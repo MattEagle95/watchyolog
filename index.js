@@ -1,6 +1,6 @@
-import Discord from "discord.js";
-import pm2 from 'pm2';
-import { markdownTable } from "markdown-table";
+const Discord = require("discord.js");
+const pm2 = require('pm2');
+const table = require('text-table');
 const Commands = {restart: "restart", reload: "reload", stop: "stop", list: "list", describe: "describe"}
 
 const client = new Discord.Client();
@@ -99,7 +99,7 @@ name: ${desc.name}
                     rows.push([process.pid, process.name, process.pm2_env.status, timeDifference(Date.now(), process.pm2_env.pm_uptime)]);
                 })
 
-                output += markdownTable(rows);
+                output += table(rows);
 
                 message.reply(output);
             })
