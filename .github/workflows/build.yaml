@@ -34,6 +34,6 @@ jobs:
         run: npm i pm2
 
       - name: Deploy
-        run: env $(cat .env | grep -v \"#\" | xargs) npx pm2 deploy ecosystem.config.js production --force
+        run: env $(cat .env | grep -v \"#\" | xargs) npx pm2 deploy ecosystem.config.cjs production --force
         # Or alternately, put this deploy script in your package.json's scripts and run it using yarn/npm:
         # run: yarn deploy
