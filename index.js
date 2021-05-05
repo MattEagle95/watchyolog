@@ -96,7 +96,7 @@ client.on("message", function (message) {
                 rows.push(['CPU USED', `${desc.monit.cpu} %`]);
                 rows.push(['RAM USED',  formatBytes(desc.monit.memory)]);
 
-                message.reply(`\`\`\`ml\n${output}\`\`\``);
+                message.reply(`\`\`\`ml\n${table(rows)}\`\`\``);
             })
         });
     }
