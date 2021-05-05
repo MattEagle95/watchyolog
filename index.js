@@ -101,7 +101,7 @@ name: ${desc.name}
 
                 output += table(rows);
 
-                message.reply(output);
+                message.reply(`\`\`\`${output}\`\`\``);
             })
         });
     }
