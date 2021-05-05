@@ -84,7 +84,7 @@ client.on("message", function (message) {
                 rows.push(['PM_ID', desc.pm_id]);
                 rows.push(['NAME', desc.name]);
                 rows.push(['STATUS', status]);
-                rows.push(['PM_UPTIME', timeDifference(Date.now(), desc.pm2_env.pm_uptime),]);
+                rows.push(['PM_UPTIME', timeDifference(Date.now(), desc.pm2_env.pm_uptime)]);
                 rows.push(['EXEC_INTERPRETER', desc.pm2_env.exec_interpreter]);
                 rows.push(['INSTANCES', desc.pm2_env.instances]);
                 rows.push(['PM_CWD', desc.pm2_env.pm_cwd]);
@@ -94,7 +94,7 @@ client.on("message", function (message) {
                 rows.push(['RESTART_TIME', desc.pm2_env.restart_time]);
                 rows.push(['UNSTABLE_RESTARTS', desc.pm2_env.unstable_restarts]);
                 rows.push(['CPU USED', `${desc.monit.cpu} %`]);
-                rows.push(['RAM USED',  formatBytes(desc.monit.memory)]);
+                rows.push(['RAM USED', formatBytes(desc.monit.memory)]);
 
                 message.reply(`\`\`\`ml\n${table(rows)}\`\`\``);
             })
