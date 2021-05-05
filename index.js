@@ -41,6 +41,11 @@ pm2.launchBus(function (err, bus) {
     })
 })
 
+const messageError = (message, err) => {
+    message.reply(`:red_circle: ${err}`);
+    console.error(err);
+}
+
 client.on("message", function (message) {
     if (message.author.bot) return;
     if (!message.content.startsWith(prefix)) return;
@@ -87,19 +92,19 @@ client.on("message", function (message) {
                     rows.push(['STATUS', status]);
                     rows.push(['PM_UPTIME', timeDifference(Date.now(), desc.pm2_env.pm_uptime)]);
                     rows.push(['EXEC_INTERPRETER', desc.pm2_env.exec_interpreter ? desc.pm2_env.exec_interpreter : '']);
-                    rows.push(['INSTANCES', desc.pm2_env.instances ? desc.pm2_env.instances : '']);
+                    rows.push(['INSTANCES', desc.pm2_env.instances]);
                     rows.push(['PM_CWD', desc.pm2_env.pm_cwd ? desc.pm2_env.pm_cwd : '']);
                     rows.push(['PM_ERR_LOG_PATH', desc.pm2_env.pm_err_log_path ? desc.pm2_env.pm_err_log_path : '']);
                     rows.push(['PM_EXEC_PATH', desc.pm2_env.pm_exec_path ? desc.pm2_env.pm_exec_path : '']);
                     rows.push(['PM_OUT_LOG_PATH', desc.pm2_env.pm_out_log_path ? desc.pm2_env.pm_out_log_path : '']);
-                    rows.push(['RESTART_TIME', desc.pm2_env.restart_time ? desc.pm2_env.restart_time : '']);
-                    rows.push(['UNSTABLE_RESTARTS', desc.pm2_env.unstable_restarts ? desc.pm2_env.unstable_restarts : '']);
-                    rows.push(['CPU USED', `${desc.monit.cpu ? desc.monit.cpu : 'undefined'} %`]);
+                    rows.push(['RESTART_TIME', desc.pm2_env.restart_time]);
+                    rows.push(['UNSTABLE_RESTARTS', desc.pm2_env.unstable_restarts]);
+                    rows.push(['CPU USED', `${desc.monit.cpu} %`]);
                     rows.push(['RAM USED', formatBytes(desc.monit.memory)]);
 
                     message.reply(`\`\`\`ml\n${table(rows)}\`\`\``);
                 } catch (err) {
-                    console.error(err);
+                    messageError(message, err);
                 }
             })
         });
@@ -113,7 +118,7 @@ client.on("message", function (message) {
                 output += `${list.filter(x => x.pm2_env.status === 'online').length}/${list.length} online\n\n`;
 
                 const rows = [];
-                rows.push(["PM_ID", "NAME", "STATUS", "ONLINE SINCE", "CPU USED", "RAM USED"])
+                rows.push(["PM_ID", "NAME", "STATUS", "UPTIME", "CPU USED", "RAM USED"])
 
                 list.forEach(process => {
 
