@@ -1,7 +1,7 @@
 const Discord = require("discord.js");
 const pm2 = require('pm2');
 const table = require('text-table');
-const Commands = {restart: "restart", reload: "reload", stop: "stop", list: "list", describe: "describe"}
+const Commands = { restart: "restart", reload: "reload", stop: "stop", list: "list", describe: "describe" }
 
 const client = new Discord.Client();
 const prefix = "!";
@@ -72,15 +72,31 @@ client.on("message", function (message) {
             }
 
             pm2.describe(args[0], (err, desc) => {
-                desc = desc[0]
-                let output = `
-args: ${args[0]}
-pid: ${desc.pid}
-pm_id: ${desc.pm_id}
-name: ${desc.name}
-                `;
+                desc = desc[0];
 
-                message.reply(output);
+                let status = `\"${process.pm2_env.status}\"`;
+                if (process.pm2_env.status !== 'online') {
+                    status = `\'${process.pm2_env.status}\'`;
+                }
+
+                const rows = [];
+                rows.push(['PID', desc.pid]);
+                rows.push(['PM_ID', desc.pm_id]);
+                rows.push(['NAME', desc.name]);
+                rows.push(['STATUS', status]);
+                rows.push(['PM_UPTIME', timeDifference(Date.now(), desc.pm2_env.pm_uptime),]);
+                rows.push(['EXEC_INTERPRETER', desc.pm2_env.exec_interpreter]);
+                rows.push(['INSTANCES', desc.pm2_env.instances]);
+                rows.push(['PM_CWD', desc.pm2_env.pm_cwd]);
+                rows.push(['PM_ERR_LOG_PATH', desc.pm2_env.pm_err_log_path]);
+                rows.push(['PM_EXEC_PATH', desc.pm2_env.pm_exec_path]);
+                rows.push(['PM_OUT_LOG_PATH', desc.pm2_env.pm_out_log_path]);
+                rows.push(['RESTART_TIME', desc.pm2_env.restart_time]);
+                rows.push(['UNSTABLE_RESTARTS', desc.pm2_env.unstable_restarts]);
+                rows.push(['CPU USED', `${desc.monit.cpu} %`]);
+                rows.push(['RAM USED',  formatBytes(desc.monit.memory)]);
+
+                message.reply(`\`\`\`ml\n${output}\`\`\``);
             })
         });
     }
@@ -98,7 +114,7 @@ name: ${desc.name}
                 list.forEach(process => {
 
                     let status = `\"${process.pm2_env.status}\"`;
-                    if(process.pm2_env.status !== 'online') {
+                    if (process.pm2_env.status !== 'online') {
                         status = `\'${process.pm2_env.status}\'`;
                     }
 
@@ -127,12 +143,12 @@ name: ${desc.name}
 
             message.reply(`restarting...`);
 
-            pm2.restart(args[0].trim(), (err) => { 
+            pm2.restart(args[0].trim(), (err) => {
                 if (err) {
                     console.error(err);
                 }
 
-             });
+            });
         });
     }
 
@@ -163,12 +179,12 @@ name: ${desc.name}
 
             message.reply(`stopping...`);
 
-            pm2.stop(args[0].trim(), (err) => { 
+            pm2.stop(args[0].trim(), (err) => {
                 if (err) {
                     console.error(err);
                 }
 
-             });
+            });
         });
     }
 
