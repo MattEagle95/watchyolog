@@ -1,16 +1,9 @@
 {
-    "EVENT_CHANNEL": "general",
-    "ERRORLOG_CHANNEL": "error-log",
-    "GUILDS": [
+    "guilds": [
         {
             "id": "",
+            "command_prefix": "!",
             "event_channel": [
-                {
-                    "id": "",
-                    "name": ""
-                }
-            ],
-            "log_channel": [
                 {
                     "id": "",
                     "name": ""
@@ -22,22 +15,12 @@
                     "name": ""
                 }
             ],
-            "watched_logs": {
-                "category": {
+            "log_category": [
+                {
                     "id": "",
                     "name": ""
-                },
-                "processes": [
-                    {
-                        "pm_id": "",
-                        "name": "",
-                        "channel": {
-                            "id": "",
-                            "name": ""
-                        }
-                    }
-                ]
-            }
+                }
+            ]
         }
     ]
 }

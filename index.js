@@ -1,6 +1,7 @@
 const Discord = require("discord.js");
 const pm2 = require('pm2');
 const table = require('text-table');
+const config = require('./config.json');
 const Commands = { restart: "restart", reload: "reload", stop: "stop", list: "list", describe: "describe", delete: "delete", flush: "flush", reloadLogs: "reloadLogs" }
 
 const client = new Discord.Client();
@@ -96,20 +97,28 @@ client.on("message", function (message) {
     }
 
     if (command === "config") {
+        const guildConfig = config.guilds.find(guild => guild.id === message.guild.id);
         const rows = [];
-        rows.push(['COMMAND_PREFIX', '!']);
-        rows.push(['EVENT_CHANNEL', 'general']);
-        rows.push(['ERROR_LOG_CHANNEL', 'error-log']);
-        rows.push(['LOG_CHANNEL_CATEGORY', 'logs']);
+        rows.push(['COMMAND_PREFIX', guildConfig.command_prefix]);
+        rows.push(['EVENT_CHANNEL', guildConfig.event_channel]);
+        rows.push(['ERROR_LOG_CHANNEL', guildConfig.error_log_channel]);
+        rows.push(['LOG_CHANNEL_CATEGORY', guildConfig.log_category]);
 
-        const infoText = `
-Change config: !configSet [name] [value]
-- !configSetEvent: sets the current channel as event channel
-- !configSetErrorLog: sets the current channel as error log channel
-Reset to defaults: !configSetDefault
-`;
+        message.reply(`\`\`\`\n${table(rows)}\`\`\``);
+    }
 
-        message.reply(`\`\`\`\n${table(rows)}\n\n${infoText}\`\`\``);
+    if (command === "configSet") {
+        const guildConfig = config.guilds.find(guild => guild.id === message.guild.id);
+
+        fs.readFile('config.json', 'utf8', function readFileCallback(err, data){
+            if (err){
+                console.log(err);
+            } else {
+            jsonConfig = JSON.parse(data); //now it an object
+            jsonConfig.guilds.find(guild => guild.id === message.guild.id).command_prefix = args[0].trim()
+            json = JSON.stringify(jsonConfig); //convert it back to json
+            fs.writeFile('config.json', json, 'utf8', callback); // write it back 
+        }});
     }
 
     if (command === Commands.describe) {
