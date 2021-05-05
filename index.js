@@ -74,9 +74,9 @@ client.on("message", function (message) {
             pm2.describe(args[0], (err, desc) => {
                 desc = desc[0];
 
-                let status = `\"${process.pm2_env.status}\"`;
-                if (process.pm2_env.status !== 'online') {
-                    status = `\'${process.pm2_env.status}\'`;
+                let status = `\"${desc.pm2_env.status}\"`;
+                if (desc.pm2_env.status !== 'online') {
+                    status = `\'${desc.pm2_env.status}\'`;
                 }
 
                 const rows = [];
