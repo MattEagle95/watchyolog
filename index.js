@@ -97,15 +97,15 @@ name: ${desc.name}
 
                 list.forEach(process => {
 
-                    let statusPrefix = "+";
+                    let status = `\"${process.pm2_env.status}\"`;
                     if(process.pm2_env.status !== 'online') {
-                        statusPrefix = "-";
+                        status = `\'${process.pm2_env.status}\'`;
                     }
 
                     rows.push([
                         process.pm_id,
                         process.name,
-                        `${statusPrefix} ${process.pm2_env.status}`,
+                        `${status}`,
                         timeDifference(Date.now(), process.pm2_env.pm_uptime),
                         `${process.monit.cpu} %`,
                         formatBytes(process.monit.memory)
@@ -114,7 +114,7 @@ name: ${desc.name}
 
                 output += table(rows);
 
-                message.reply(`\`\`\`diff\\n${output}\`\`\``);
+                message.reply(`\`\`\`ml\n${output}\`\`\``);
             })
         });
     }
