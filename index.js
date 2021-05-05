@@ -98,7 +98,6 @@ client.on("message", function (message) {
 
     if (command === "init") {
         try {
-            const guildConfig = config.guilds.find(guild => guild.id === message.guild.id);
             if (!guildConfig) {
                 fs.readFile('./config.json', 'utf8', function readFileCallback(err, data) {
                     if (err) {
