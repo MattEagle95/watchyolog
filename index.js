@@ -114,7 +114,7 @@ name: ${desc.name}
 
                 output += table(rows);
 
-                message.reply(`\`\`\`diff\n${output}\`\`\``);
+                message.reply(`\`\`\`diff\\n${output}\`\`\``);
             })
         });
     }
