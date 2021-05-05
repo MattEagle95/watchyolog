@@ -25,17 +25,17 @@ pm2.launchBus(function (err, bus) {
 
     bus.on('process:event', function (packet) {
         const channel = client.channels.cache.find(channel => channel.name === 'general');
-        if(packet.event === 'restart' || packet.event === 'reload' || packet.event === 'exit') {
+        if (packet.event === 'restart' || packet.event === 'reload' || packet.event === 'exit') {
             channel.send(`:tools: ${packet.event} - ${packet.process.name}`);
             return;
         }
 
-        if(packet.event === 'stop') {
+        if (packet.event === 'stop') {
             channel.send(`:stop_sign: ${packet.event} - ${packet.process.name}`);
             return;
         }
 
-        if(packet.event === 'online') {
+        if (packet.event === 'online') {
             channel.send(`:green_circle: ${packet.event} - ${packet.process.name}`);
             return;
         }
@@ -76,14 +76,40 @@ client.on("message", function (message) {
 
     if (command === "help") {
         const rows = [];
-        rows.push(['!ping', 'returns the latency']);
+        rows.push(['!help', 'help']);
         rows.push(['!list', 'pm2 list']);
         rows.push(['!describe [process]', 'pm2 describe']);
         rows.push(['!restart [process]', 'pm2 restart']);
         rows.push(['!reload [process]', 'pm2 reload']);
         rows.push(['!stop [process]', 'pm2 stop']);
+        rows.push(['!delete [process]', 'pm2 delete']);
+        rows.push(['!reloadLogs', 'pm2 reloadLogs']);
+        rows.push(['!flush [process]', 'pm2 flush']);
+        rows.push(['!config', 'returns the config']);
+        rows.push(['!configSet [name] [value]', 'sets a config value']);
+        rows.push(['!configSetEvent', 'sets the current channel as event channel']);
+        rows.push(['!configSetErrorLog', 'sets the current channel as error log channel']);
+        rows.push(['!configSetDefault', 'resets the config']);
+        rows.push(['!ping', 'returns the bot latency']);
 
         message.reply(`\`\`\`\n${table(rows)}\`\`\``);
+    }
+
+    if (command === "config") {
+        const rows = [];
+        rows.push(['COMMAND_PREFIX', '!']);
+        rows.push(['EVENT_CHANNEL', 'general']);
+        rows.push(['ERROR_LOG_CHANNEL', 'error-log']);
+        rows.push(['LOG_CHANNEL_CATEGORY', 'logs']);
+
+        const infoText = `
+Change config: !configSet [name] [value]
+- !configSetEvent: sets the current channel as event channel
+- !configSetErrorLog: sets the current channel as error log channel
+Reset to defaults: !configSetDefault
+`;
+
+        message.reply(`\`\`\`\n${table(rows)}\n\n${infoText}\`\`\``);
     }
 
     if (command === Commands.describe) {
@@ -175,7 +201,7 @@ client.on("message", function (message) {
                     console.error(err);
                 }
 
-                message.reply(`:green_circle: ${name} restarted...`);
+                message.reply(`:green_circle: ${name} restarting...`);
             });
         });
     }
@@ -192,11 +218,11 @@ client.on("message", function (message) {
 
             pm2.reload(name, (err) => {
                 if (err) {
-                    console.error(err);
+                    messageError(message, err);
                     return;
                 }
 
-                message.reply(`:green_circle: ${name} reloaded...`);
+                message.reply(`:green_circle: ${name} reloading...`);
             });
         });
     }
@@ -215,11 +241,11 @@ client.on("message", function (message) {
 
             pm2.stop(name, (err) => {
                 if (err) {
-                    console.error(err);
+                    messageError(message, err);
                     return;
                 }
 
-                message.reply(`:green_circle: ${name} stopped...`);
+                message.reply(`:green_circle: ${name} stopping...`);
             });
         });
     }
@@ -238,7 +264,7 @@ client.on("message", function (message) {
 
             pm2.delete(name, (err) => {
                 if (err) {
-                    console.error(err);
+                    messageError(message, err);
                     return;
                 }
 
@@ -261,7 +287,7 @@ client.on("message", function (message) {
 
             pm2.flush(name, (err) => {
                 if (err) {
-                    console.error(err);
+                    messageError(message, err);
                     return;
                 }
 
@@ -282,7 +308,7 @@ client.on("message", function (message) {
 
             pm2.reloadLogs((err) => {
                 if (err) {
-                    console.error(err);
+                    messageError(message, err);
                     return;
                 }
 
