@@ -96,6 +96,27 @@ client.on("message", function (message) {
         message.reply(`\`\`\`\n${table(rows)}\`\`\``);
     }
 
+    if (command === "init") {
+        const guildConfig = config.guilds.find(guild => guild.id === message.guild.id);
+        if(!guildConfig) {
+            fs.readFile('config.json', 'utf8', function readFileCallback(err, data){
+                if (err){
+                    console.log(err);
+                } else {
+                jsonConfig = JSON.parse(data); //now it an object
+                jsonConfig.guilds.push({
+                    id: message.guild.id,
+                    command_prefix: '!',
+                    event_channel: 'general',
+                    error_log_channel: 'general',
+                    log_category: 'logs'
+                })
+                json = JSON.stringify(jsonConfig); //convert it back to json
+                fs.writeFile('config.json', json, 'utf8', callback); // write it back 
+            }});
+        }
+    }
+
     if (command === "config") {
         const guildConfig = config.guilds.find(guild => guild.id === message.guild.id);
         const rows = [];
