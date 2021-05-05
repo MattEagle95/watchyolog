@@ -91,14 +91,14 @@ client.on("message", function (message) {
                     rows.push(['NAME', desc.name]);
                     rows.push(['STATUS', status]);
                     rows.push(['PM_UPTIME', timeDifference(Date.now(), desc.pm2_env.pm_uptime)]);
-                    rows.push(['EXEC_INTERPRETER', desc.pm2_env.exec_interpreter ? desc.pm2_env.exec_interpreter : '']);
-                    rows.push(['INSTANCES', desc.pm2_env.instances]);
-                    rows.push(['PM_CWD', desc.pm2_env.pm_cwd ? desc.pm2_env.pm_cwd : '']);
-                    rows.push(['PM_ERR_LOG_PATH', desc.pm2_env.pm_err_log_path ? desc.pm2_env.pm_err_log_path : '']);
-                    rows.push(['PM_EXEC_PATH', desc.pm2_env.pm_exec_path ? desc.pm2_env.pm_exec_path : '']);
-                    rows.push(['PM_OUT_LOG_PATH', desc.pm2_env.pm_out_log_path ? desc.pm2_env.pm_out_log_path : '']);
-                    rows.push(['RESTART_TIME', desc.pm2_env.restart_time]);
-                    rows.push(['UNSTABLE_RESTARTS', desc.pm2_env.unstable_restarts]);
+                    rows.push(['EXEC_INTERPRETER', desc.pm2_env.exec_interpreter]);
+                    rows.push(['INSTANCES', desc.pm2_env.instances ? desc.pm2_env.instances : 0]);
+                    rows.push(['PM_CWD', desc.pm2_env.pm_cwd]);
+                    rows.push(['PM_ERR_LOG_PATH', desc.pm2_env.pm_err_log_path]);
+                    rows.push(['PM_EXEC_PATH', desc.pm2_env.pm_exec_path]);
+                    rows.push(['PM_OUT_LOG_PATH', desc.pm2_env.pm_out_log_path]);
+                    rows.push(['RESTART_TIME', desc.pm2_env.restart_time ? desc.pm2_env.restart_time : 0]);
+                    rows.push(['UNSTABLE_RESTARTS', desc.pm2_env.unstable_restarts ? desc.pm2_env.unstable_restarts : 0]);
                     rows.push(['CPU USED', `${desc.monit.cpu} %`]);
                     rows.push(['RAM USED', formatBytes(desc.monit.memory)]);
 
