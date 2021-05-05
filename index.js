@@ -75,28 +75,26 @@ client.on("message", function (message) {
                 try {
                     desc = desc[0];
 
-                    message.reply(`\`\`\`json\n${JSON.stringify(desc)}\`\`\``);
-
                     let status = `\"${desc.pm2_env.status}\"`;
                     if (desc.pm2_env.status !== 'online') {
                         status = `\'${desc.pm2_env.status}\'`;
                     }
 
                     const rows = [];
-                    rows.push(['PID', desc.pid]);
+                    rows.push(['PID', desc.pid ? desc.pid : '']);
                     rows.push(['PM_ID', desc.pm_id]);
                     rows.push(['NAME', desc.name]);
                     rows.push(['STATUS', status]);
                     rows.push(['PM_UPTIME', timeDifference(Date.now(), desc.pm2_env.pm_uptime)]);
-                    rows.push(['EXEC_INTERPRETER', desc.pm2_env.exec_interpreter]);
-                    rows.push(['INSTANCES', desc.pm2_env.instances]);
-                    rows.push(['PM_CWD', desc.pm2_env.pm_cwd]);
-                    rows.push(['PM_ERR_LOG_PATH', desc.pm2_env.pm_err_log_path]);
-                    rows.push(['PM_EXEC_PATH', desc.pm2_env.pm_exec_path]);
-                    rows.push(['PM_OUT_LOG_PATH', desc.pm2_env.pm_out_log_path]);
-                    rows.push(['RESTART_TIME', desc.pm2_env.restart_time]);
-                    rows.push(['UNSTABLE_RESTARTS', desc.pm2_env.unstable_restarts]);
-                    rows.push(['CPU USED', `${desc.monit.cpu} %`]);
+                    rows.push(['EXEC_INTERPRETER', desc.pm2_env.exec_interpreter ? desc.pm2_env.exec_interpreter : '']);
+                    rows.push(['INSTANCES', desc.pm2_env.instances ? desc.pm2_env.instances : '']);
+                    rows.push(['PM_CWD', desc.pm2_env.pm_cwd ? desc.pm2_env.pm_cwd : '']);
+                    rows.push(['PM_ERR_LOG_PATH', desc.pm2_env.pm_err_log_path ? desc.pm2_env.pm_err_log_path : '']);
+                    rows.push(['PM_EXEC_PATH', desc.pm2_env.pm_exec_path ? desc.pm2_env.pm_exec_path : '']);
+                    rows.push(['PM_OUT_LOG_PATH', desc.pm2_env.pm_out_log_path ? desc.pm2_env.pm_out_log_path : '']);
+                    rows.push(['RESTART_TIME', desc.pm2_env.restart_time ? desc.pm2_env.restart_time : '']);
+                    rows.push(['UNSTABLE_RESTARTS', desc.pm2_env.unstable_restarts ? desc.pm2_env.unstable_restarts : '']);
+                    rows.push(['CPU USED', `${desc.monit.cpu ? desc.monit.cpu : 'undefined'} %`]);
                     rows.push(['RAM USED', formatBytes(desc.monit.memory)]);
 
                     message.reply(`\`\`\`ml\n${table(rows)}\`\`\``);
