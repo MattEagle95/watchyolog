@@ -10,12 +10,6 @@ const logProcesses = [];
 
 client.login(process.env.BOT_TOKEN);
 
-console.log(markdownTable([
-    ['Branch', 'Commit'],
-    ['main', '0123456789abcdef'],
-    ['staging', 'fedcba9876543210']
-]));
-
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
     client.user.setPresence({ activity: { name: 'with discord.js', type: 'WATCHING' }, status: 'online' });
@@ -102,7 +96,7 @@ name: ${desc.name}
                 rows.push(["PID", "NAME", "STATUS", "ONLINE SINCE"])
 
                 list.forEach(process => {
-                    rows.push(process.pid, process.name, process.pm2_env.status, timeDifference(Date.now(), process.pm2_env.pm_uptime));
+                    rows.push([process.pid, process.name, process.pm2_env.status, timeDifference(Date.now(), process.pm2_env.pm_uptime)]);
                 })
 
                 output += markdownTable(rows);
