@@ -25,6 +25,21 @@ pm2.launchBus(function (err, bus) {
 
     bus.on('process:event', function (packet) {
         const channel = client.channels.cache.find(channel => channel.name === 'general');
+        if(packet.event === 'restart' || packet.event === 'reload' || packet.event === 'exit') {
+            channel.send(`:tools: ${packet.event} - ${packet.process.name}`);
+            return;
+        }
+
+        if(packet.event === 'stop') {
+            channel.send(`:stop_sign: ${packet.event} - ${packet.process.name}`);
+            return;
+        }
+
+        if(packet.event === 'online') {
+            channel.send(`:green_circle: ${packet.event} - ${packet.process.name}`);
+            return;
+        }
+
         channel.send(`EVENT: ${packet.event} - ${packet.process.name}`);
     })
 
@@ -68,7 +83,7 @@ client.on("message", function (message) {
         rows.push(['!reload [process]', 'pm2 reload']);
         rows.push(['!stop [process]', 'pm2 stop']);
 
-        message.reply(`\`\`\`ml\n${table(rows)}\`\`\``);
+        message.reply(`\`\`\`\n${table(rows)}\`\`\``);
     }
 
     if (command === Commands.describe) {
@@ -158,6 +173,7 @@ client.on("message", function (message) {
                     console.error(err);
                 }
 
+                message.reply(`:green_circle: ${args[0].trim()} restarted`);
             });
         });
     }
@@ -197,7 +213,7 @@ client.on("message", function (message) {
                     return;
                 }
 
-                message.reply(`:green_circle: ${args[0].trim()} reloaded`);
+                message.reply(`:green_circle: ${args[0].trim()} stopped`);
             });
         });
     }
