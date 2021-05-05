@@ -1,7 +1,7 @@
 import Discord from "discord.js";
 import pm2 from 'pm2';
 import { markdownTable } from "markdown-table";
-const Commands = Object.freeze({ "restart": {}, "reload": {}, "stop": {}, "list": {}, "describe": {} })
+const Commands = {restart: "restart", reload: "reload", stop: "stop", list: "list", describe: "describe"}
 
 const client = new Discord.Client();
 const prefix = "!";
@@ -99,9 +99,10 @@ name: ${desc.name}
                 output += `${list.filter(x => x.pm2_env.status === 'online').length}/${list.length} online\n\n`;
 
                 const rows = [];
+                rows.push(["PID", "NAME", "STATUS", "ONLINE SINCE"])
 
                 list.forEach(process => {
-                    rows.push(process.name, process.pm2_env.status, timeDifference(Date.now(), process.pm2_env.pm_uptime));
+                    rows.push(process.pid, process.name, process.pm2_env.status, timeDifference(Date.now(), process.pm2_env.pm_uptime));
                 })
 
                 output += markdownTable(rows);

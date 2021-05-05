@@ -1,7 +1,4 @@
-import { markdownTable } from "markdown-table";
+const Commands = {STOP: "stop"}
 
-console.log(markdownTable([
-    ['Branch', 'Commit'],
-    ['main', '0123456789abcdef'],
-    ['staging', 'fedcba9876543210']
-]));
+console.log("stop" === Commands.STOP);
+console.log(Commands.STOP);
