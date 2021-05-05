@@ -98,11 +98,11 @@ client.on("message", function (message) {
 
     if (command === "init") {
         try {
-            fs.readFile('./config.json', 'utf8', function readFileCallback(err, data) {
+            fs.readFile('config.json', 'utf8', function readFileCallback(err, data) {
                 if (err) {
-                    console.log(err);
+                    messageError(message, err);
                 } else {
-                    jsonConfig = JSON.parse(data); //now it an object
+                    jsonConfig = JSON.parse(data);
                     jsonConfig.guilds.push({
                         id: message.guild.id,
                         command_prefix: '!',
@@ -110,8 +110,8 @@ client.on("message", function (message) {
                         error_log_channel: 'general',
                         log_category: 'logs'
                     })
-                    json = JSON.stringify(jsonConfig); //convert it back to json
-                    fs.writeFile('./config.json', json, 'utf8', callback); // write it back 
+                    json = JSON.stringify(jsonConfig);
+                    fs.writeFile('./config.json', json, 'utf8', callback);
                 }
             });
         } catch (err) {
@@ -120,7 +120,7 @@ client.on("message", function (message) {
     }
 
     if (command === "config") {
-        fs.readFile('./config.json', 'utf8', function readFileCallback(err, data) {
+        fs.readFile('config.json', 'utf8', function readFileCallback(err, data) {
             const guildConfig = data.guilds.find(guild => guild.id === message.guild.id);
 
             const rows = [];
@@ -134,8 +134,6 @@ client.on("message", function (message) {
     }
 
     if (command === "configSet") {
-        const guildConfig = config.guilds.find(guild => guild.id === message.guild.id);
-
         fs.readFile('config.json', 'utf8', function readFileCallback(err, data) {
             if (err) {
                 console.log(err);
