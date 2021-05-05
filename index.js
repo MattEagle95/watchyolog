@@ -60,14 +60,15 @@ client.on("message", function (message) {
     }
 
     if (command === "help") {
-        message.reply(`
-**Help**
-!ping - returns the latency
-!commands - show available commands
-!list - pm2 list
-!describe - pm2 describe
-!reload - pm2 reload
-        `);
+        const rows = [];
+        rows.push(['!ping', 'returns the latency']);
+        rows.push(['!list', 'pm2 list']);
+        rows.push(['!describe [process]', 'pm2 describe']);
+        rows.push(['!restart [process]', 'pm2 restart']);
+        rows.push(['!reload [process]', 'pm2 reload']);
+        rows.push(['!stop [process]', 'pm2 stop']);
+
+        message.reply(`\`\`\`ml\n${table(rows)}\`\`\``);
     }
 
     if (command === Commands.describe) {
@@ -150,7 +151,7 @@ client.on("message", function (message) {
                 console.error(err);
             }
 
-            message.reply(`restarting...`);
+            message.reply(`:tools: restarting...`);
 
             pm2.restart(args[0].trim(), (err) => {
                 if (err) {
@@ -167,13 +168,15 @@ client.on("message", function (message) {
                 console.error(err);
             }
 
-            message.reply(`reloading...`);
+            message.reply(`:tools: reloading...`);
 
             pm2.reload(args[0].trim(), (err) => {
                 if (err) {
                     console.error(err);
+                    return;
                 }
 
+                message.reply(`:green_circle: ${args[0].trim()} reloaded`);
             });
         });
     }
@@ -186,13 +189,15 @@ client.on("message", function (message) {
                 console.error(err);
             }
 
-            message.reply(`stopping...`);
+            message.reply(`:tools: stopping...`);
 
             pm2.stop(args[0].trim(), (err) => {
                 if (err) {
                     console.error(err);
+                    return;
                 }
 
+                message.reply(`:green_circle: ${args[0].trim()} reloaded`);
             });
         });
     }
