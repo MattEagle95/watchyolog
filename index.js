@@ -96,7 +96,7 @@ name: ${desc.name}
                 rows.push(["PM_ID", "NAME", "STATUS", "ONLINE SINCE"])
 
                 list.forEach(process => {
-                    rows.push([process.pm_id.trim().toString(), process.name.trim().toString(), process.pm2_env.status.trim().toString(), timeDifference(Date.now(), process.pm2_env.pm_uptime)]);
+                    rows.push([process.pm_id, process.name.trim().toString(), process.pm2_env.status.trim().toString(), timeDifference(Date.now(), process.pm2_env.pm_uptime)]);
                 })
 
                 output += table(rows);
