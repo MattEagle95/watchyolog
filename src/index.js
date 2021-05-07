@@ -3,6 +3,7 @@ const pm2 = require('pm2');
 const fs = require('fs');
 const table = require('text-table');
 const Commands = require('./models/commands');
+const {timeSince, formatBytes} = require('./util/util');
 
 const client = new Discord.Client();
 const prefix = "!";
@@ -136,9 +137,9 @@ client.on("message", function (message) {
 
             const rows = [];
             rows.push(['COMMAND_PREFIX', guildConfig.command_prefix]);
-            rows.push(['EVENT_CHANNEL', guildConfig.event_channel]);
-            rows.push(['ERROR_LOG_CHANNEL', guildConfig.error_log_channel]);
-            rows.push(['LOG_CHANNEL_CATEGORY', guildConfig.log_category]);
+            rows.push(['EVENT_CHANNEL', guildConfig.event_channel.name]);
+            rows.push(['ERROR_LOG_CHANNEL', guildConfig.error_log_channel.name]);
+            rows.push(['LOG_CHANNEL_CATEGORY', guildConfig.log_category.name ? guildConfig.log_category.name : '']);
 
             message.reply(`\`\`\`\n${table(rows)}\`\`\``);
         });
@@ -218,7 +219,7 @@ client.on("message", function (message) {
                         process.pm_id,
                         process.name,
                         `${status}`,
-                        timeDifference(Date.now(), process.pm2_env.pm_uptime),
+                        timeSince(Date.now(), process.pm2_env.pm_uptime),
                         `${process.monit.cpu} %`,
                         formatBytes(process.monit.memory)
                     ]);
@@ -380,49 +381,3 @@ client.on("channelDelete", function (channel) {
         logProcesses.splice(logProcesses.indexOf(channel.name), 1);
     }
 });
-
-function timeDifference(current, previous) {
-    var msPerMinute = 60 * 1000;
-    var msPerHour = msPerMinute * 60;
-    var msPerDay = msPerHour * 24;
-    var msPerMonth = msPerDay * 30;
-    var msPerYear = msPerDay * 365;
-
-    var elapsed = current - previous;
-
-    if (elapsed < msPerMinute) {
-        return Math.round(elapsed / 1000) + ' seconds';
-    }
-
-    else if (elapsed < msPerHour) {
-        return Math.round(elapsed / msPerMinute) + ' minutes';
-    }
-
-    else if (elapsed < msPerDay) {
-        return Math.round(elapsed / msPerHour) + ' hours';
-    }
-
-    else if (elapsed < msPerMonth) {
-        return 'approximately ' + Math.round(elapsed / msPerDay) + ' days ago';
-    }
-
-    else if (elapsed < msPerYear) {
-        return 'approximately ' + Math.round(elapsed / msPerMonth) + ' months ago';
-    }
-
-    else {
-        return 'approximately ' + Math.round(elapsed / msPerYear) + ' years ago';
-    }
-}
-
-function formatBytes(bytes, decimals = 2) {
-    if (bytes === 0) return '0 Bytes';
-
-    const k = 1024;
-    const dm = decimals < 0 ? 0 : decimals;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
-}
