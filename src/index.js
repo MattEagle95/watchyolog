@@ -2,7 +2,7 @@ const Discord = require("discord.js");
 const pm2 = require('pm2');
 const fs = require('fs');
 const table = require('text-table');
-const Commands = { restart: "restart", reload: "reload", stop: "stop", list: "list", describe: "describe", delete: "delete", flush: "flush", reloadLogs: "reloadLogs" }
+const Commands = require('./models/commands');
 
 const client = new Discord.Client();
 const prefix = "!";
@@ -70,12 +70,12 @@ client.on("message", function (message) {
     const args = commandBody.split(' ');
     const command = args.shift().toLowerCase();
 
-    if (command === "ping") {
+    if (command === Commands.ping) {
         const timeTaken = Date.now() - message.createdTimestamp;
         message.reply(`Pong! This message had a latency of ${timeTaken}ms`);
     }
 
-    if (command === "help") {
+    if (command === Commands.help) {
         const rows = [];
         rows.push(['!help', 'help']);
         rows.push(['!list', 'pm2 list']);
@@ -84,34 +84,44 @@ client.on("message", function (message) {
         rows.push(['!reload [process]', 'pm2 reload']);
         rows.push(['!stop [process]', 'pm2 stop']);
         rows.push(['!delete [process]', 'pm2 delete']);
-        rows.push(['!reloadLogs', 'pm2 reloadLogs']);
+        rows.push(['!reload-logs', 'pm2 reloadLogs']);
         rows.push(['!flush [process]', 'pm2 flush']);
         rows.push(['!config', 'returns the config']);
-        rows.push(['!configSet [name] [value]', 'sets a config value']);
-        rows.push(['!configSetEvent', 'sets the current channel as event channel']);
-        rows.push(['!configSetErrorLog', 'sets the current channel as error log channel']);
-        rows.push(['!configSetDefault', 'resets the config']);
+        rows.push(['!config-set [name] [value]', 'sets a config value']);
+        rows.push(['!config-set-default', 'resets the config']);
         rows.push(['!ping', 'returns the bot latency']);
 
         message.reply(`\`\`\`\n${table(rows)}\`\`\``);
     }
 
-    if (command === "init") {
+    if (command === Commands.start || command === Commands.configSetDefault) {
         try {
-            fs.readFile('config.json', 'utf8', function readFileCallback(err, data) {
+            fs.readFile('config.json', 'utf8', (err, data) => {
                 if (err) {
                     messageError(message, err);
                 } else {
                     jsonConfig = JSON.parse(data);
-                    jsonConfig.guilds.push({
-                        id: message.guild.id,
-                        command_prefix: '!',
-                        event_channel: 'general',
-                        error_log_channel: 'general',
-                        log_category: 'logs'
-                    })
+                    let foundGuild = jsonConfig.guilds.find(guild => guild.id === message.guild.id);
+                    if (foundGuild) {
+                        foundGuild = {
+                            id: message.guild.id,
+                            command_prefix: '!',
+                            event_channel: { id: message.channel.id, name: message.channel.name },
+                            error_log_channel: { id: message.channel.id, name: message.channel.name },
+                            log_category: null
+                        }
+                    } else {
+                        jsonConfig.guilds.push({
+                            id: message.guild.id,
+                            command_prefix: '!',
+                            event_channel: { id: message.channel.id, name: message.channel.name },
+                            error_log_channel: { id: message.channel.id, name: message.channel.name },
+                            log_category: null
+                        })
+                    }
+
                     json = JSON.stringify(jsonConfig);
-                    fs.writeFile('./config.json', json, 'utf8', callback);
+                    fs.writeFile('config.json', json, 'utf8', () => { });
                 }
             });
         } catch (err) {
@@ -119,9 +129,10 @@ client.on("message", function (message) {
         }
     }
 
-    if (command === "config") {
-        fs.readFile('config.json', 'utf8', function readFileCallback(err, data) {
-            const guildConfig = data.guilds.find(guild => guild.id === message.guild.id);
+    if (command === Commands.config) {
+        fs.readFile('config.json', 'utf8', (err, data) => {
+            jsonConfig = JSON.parse(data);
+            const guildConfig = jsonConfig.guilds.find(guild => guild.id === message.guild.id);
 
             const rows = [];
             rows.push(['COMMAND_PREFIX', guildConfig.command_prefix]);
@@ -133,20 +144,20 @@ client.on("message", function (message) {
         });
     }
 
-    if (command === "configSet") {
-        fs.readFile('config.json', 'utf8', function readFileCallback(err, data) {
+    if (command === Commands.configSet) {
+        fs.readFile('config.json', 'utf8', (err, data) => {
             if (err) {
                 console.log(err);
             } else {
                 jsonConfig = JSON.parse(data); //now it an object
-                jsonConfig.guilds.find(guild => guild.id === message.guild.id).command_prefix = args[0].trim()
+                jsonConfig.guilds.find(guild => guild.id === message.guild.id).command_prefix = args[1]
                 json = JSON.stringify(jsonConfig); //convert it back to json
-                fs.writeFile('config.json', json, 'utf8', callback); // write it back 
+                fs.writeFile('config.json', json, 'utf8', () => { }); // write it back 
             }
         });
     }
 
-    if (command === Commands.describe) {
+    if (command === Commands.pm2.describe) {
         pm2.connect(function (err) {
             if (err) {
                 console.error(err);
@@ -186,7 +197,7 @@ client.on("message", function (message) {
         });
     }
 
-    if (command === Commands.list) {
+    if (command === Commands.pm2.list) {
         pm2.connect(function (err) {
             pm2.list((err, list) => {
                 let output = "";
@@ -220,7 +231,7 @@ client.on("message", function (message) {
         });
     }
 
-    if (command === Commands.restart) {
+    if (command === Commands.pm2.restart) {
         pm2.connect(function (err) {
             if (err) {
                 console.error(err);
@@ -240,7 +251,7 @@ client.on("message", function (message) {
         });
     }
 
-    if (command === Commands.reload) {
+    if (command === Commands.pm2.reload) {
         pm2.connect(function (err) {
             if (err) {
                 console.error(err);
@@ -261,7 +272,7 @@ client.on("message", function (message) {
         });
     }
 
-    if (command === Commands.stop) {
+    if (command === Commands.pm2.stop) {
         console.log('stopping');
 
         pm2.connect(function (err) {
@@ -284,7 +295,7 @@ client.on("message", function (message) {
         });
     }
 
-    if (command === Commands.delete) {
+    if (command === Commands.pm2.delete) {
         console.log('deleting');
 
         pm2.connect(function (err) {
@@ -307,7 +318,7 @@ client.on("message", function (message) {
         });
     }
 
-    if (command === Commands.flush) {
+    if (command === Commands.pm2.flush) {
         console.log('flushing');
 
         pm2.connect(function (err) {
@@ -330,7 +341,7 @@ client.on("message", function (message) {
         });
     }
 
-    if (command === Commands.reloadLogs) {
+    if (command === Commands.pm2.reloadLogs) {
         console.log('reloading logs');
 
         pm2.connect(function (err) {

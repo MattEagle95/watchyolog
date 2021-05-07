@@ -1,3 +1,17 @@
 {
-    "guilds": []
+    "guilds": [
+        {
+            "id": "827582556509306912",
+            "command_prefix": "!",
+            "event_channel": {
+                "id": "833351944797028372",
+                "name": "general"
+            },
+            "error_log_channel": {
+                "id": "833351944797028372",
+                "name": "general"
+            },
+            "log_category": null
+        }
+    ]
 }
