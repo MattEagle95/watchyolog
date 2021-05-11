@@ -19,7 +19,7 @@ client.on('ready', async () => {
 });
 
 
-const sendEventMsg = (msg) => {
+const sendEventMsg = async (msg) => {
     const guilds = await configService.get();
 
     guilds.forEach(guild => {
@@ -30,7 +30,7 @@ const sendEventMsg = (msg) => {
     });
 }
 
-const sendErrorLogMsg = (msg) => {
+const sendErrorLogMsg = async (msg) => {
     const guilds = await configService.get();
 
     guilds.forEach(guild => {
