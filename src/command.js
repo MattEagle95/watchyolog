@@ -3,7 +3,9 @@ module.exports = {
     start: "start",
     ping: "ping",
     config: "config",
-    configSet: "config-set",
+    configSetEvent: "config-set-event",
+    configSetError: "config-set-error",
+    configSetLogCategory: "config-set-log-category",
     configSetDefault: "config-set-default",
     pm2: {
         list: "list",

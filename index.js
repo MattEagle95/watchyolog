@@ -2,61 +2,49 @@ const Discord = require("discord.js");
 const pm2 = require('pm2');
 const fs = require('fs');
 const table = require('text-table');
-const Commands = require('./models/commands');
-const {timeSince, formatBytes} = require('./util/util');
+const Command = require('./command');
+const { timeSince, formatBytes } = require('./util');
+const configService = require('./guildConfig');
+
+const prefix = '!';
 
 const client = new Discord.Client();
-const prefix = "!";
-
-const logProcesses = [];
-
 client.login(process.env.BOT_TOKEN);
 
-client.on('ready', () => {
-    console.log(`Logged in as ${client.user.tag}!`);
-    client.user.setPresence({ activity: { name: 'with discord.js', type: 'WATCHING' }, status: 'online' });
+client.on('ready', async () => {
+    console.log(`Logged in as ${client.user.tag}`);
+    client.user.setPresence({ activity: { name: 'Processes', type: 'WATCHING' }, status: 'online' });
 
-    const channel = client.channels.cache.find(channel => channel.name === 'general');
-    channel.send(`I AM BACK!`);
+    sendEventMsg(`I'm online`);
 });
 
-pm2.launchBus(function (err, bus) {
-    if (err) {
-        console.error(err)
-    }
 
-    bus.on('process:event', function (packet) {
-        const channel = client.channels.cache.find(channel => channel.name === 'general');
-        if (packet.event === 'restart' || packet.event === 'reload' || packet.event === 'exit') {
-            channel.send(`:tools: ${packet.event} - ${packet.process.name}`);
-            return;
+const sendEventMsg = (msg) => {
+    const guilds = await configService.get();
+
+    guilds.forEach(guild => {
+        const channel = client.channels.cache.find(channel => guild.event_channel && channel.id === guild.event_channel.id);
+        if (channel) {
+            channel.send(msg);
         }
+    });
+}
 
-        if (packet.event === 'stop') {
-            channel.send(`:stop_sign: ${packet.event} - ${packet.process.name}`);
-            return;
+const sendErrorLogMsg = (msg) => {
+    const guilds = await configService.get();
+
+    guilds.forEach(guild => {
+        const channel = client.channels.cache.find(channel => guild.error_log_channel && channel.id === guild.event_channel.id);
+        if (channel) {
+            channel.send(msg);
         }
+    });
+}
 
-        if (packet.event === 'online') {
-            channel.send(`:green_circle: ${packet.event} - ${packet.process.name}`);
-            return;
-        }
-
-        channel.send(`EVENT: ${packet.event} - ${packet.process.name}`);
-    })
-
-    bus.on('log:out', function (packet) {
-        if (logProcesses.indexOf(packet.process.name.trim()) !== -1) {
-            const channel = client.channels.cache.find(channel => channel.name === `log-${packet.process.name.trim()}`);
-            channel.send(`${packet.process.name}: ${packet.data}`);
-        }
-    })
-
-    bus.on('log:err', function (packet) {
-        const channel = client.channels.cache.find(channel => channel.name === 'error-log');
-        channel.send(`${packet.process.name}: ${packet.data}`);
-    })
-})
+const handleError = (message, err) => {
+    message.reply(`:red_circle: ${err}`);
+    console.error(err);
+}
 
 const messageError = (message, err) => {
     message.reply(`:red_circle: ${err}`);
@@ -71,9 +59,14 @@ client.on("message", function (message) {
     const args = commandBody.split(' ');
     const command = args.shift().toLowerCase();
 
-    if (command === Commands.ping) {
-        const timeTaken = Date.now() - message.createdTimestamp;
-        message.reply(`Pong! This message had a latency of ${timeTaken}ms`);
+    switch (command) {
+        case Command.ping:
+            const timeTaken = Date.now() - message.createdTimestamp;
+            message.reply(`Pong! This message had a latency of ${timeTaken}ms`);
+            break;
+
+        default:
+            break;
     }
 
     if (command === Commands.help) {

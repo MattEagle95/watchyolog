@@ -1,4 +1,6 @@
-const Commands = {STOP: "stop"}
+const abc = {
+    a: 'yo',
+    b: 'abc',
+}
 
-console.log("stop" === Commands.STOP);
-console.log(Commands.STOP);
+console.log(abc.get('a'));
