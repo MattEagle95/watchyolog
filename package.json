@@ -2,7 +2,7 @@
   "name": "watchyolog",
   "version": "1.0.0",
   "description": "",
-  "main": "src/bot.js",
+  "main": "src/index.js",
   "dependencies": {
     "cross-env": "^7.0.3",
     "discord.js": "^12.5.3",
@@ -12,8 +12,8 @@
   },
   "devDependencies": {},
   "scripts": {
-    "start": "node src/bot",
-    "dev": "env-cmd node src/bot",
+    "start": "node src/index",
+    "dev": "env-cmd node src/index",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
