@@ -1,4 +1,4 @@
-const fsp = require("fs/promises");
+const fsp = require("fs").promises;
 
 const configPath = 'config.json';
 const encoding = 'utf8';
