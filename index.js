@@ -2,9 +2,9 @@ const Discord = require("discord.js");
 const pm2 = require('pm2');
 const fs = require('fs');
 const table = require('text-table');
-const Command = require('./command');
-const { timeSince, formatBytes } = require('./util');
-const configService = require('./guildConfig');
+const Command = require('./src/command');
+const { timeSince, formatBytes } = require('./src/util');
+const configService = require('./src/guildConfig');
 
 const prefix = '!';
 
