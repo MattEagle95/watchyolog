@@ -69,7 +69,7 @@ client.on("message", function (message) {
             break;
     }
 
-    if (command === Commands.help) {
+    if (command === Command.help) {
         const rows = [];
         rows.push(['!help', 'help']);
         rows.push(['!list', 'pm2 list']);
@@ -88,7 +88,7 @@ client.on("message", function (message) {
         message.reply(`\`\`\`\n${table(rows)}\`\`\``);
     }
 
-    if (command === Commands.start || command === Commands.configSetDefault) {
+    if (command === Command.start || command === Command.configSetDefault) {
         try {
             fs.readFile('config.json', 'utf8', (err, data) => {
                 if (err) {
@@ -123,7 +123,7 @@ client.on("message", function (message) {
         }
     }
 
-    if (command === Commands.config) {
+    if (command === Command.config) {
         fs.readFile('config.json', 'utf8', (err, data) => {
             jsonConfig = JSON.parse(data);
             const guildConfig = jsonConfig.guilds.find(guild => guild.id === message.guild.id);
@@ -138,7 +138,7 @@ client.on("message", function (message) {
         });
     }
 
-    if (command === Commands.configSet) {
+    if (command === Command.configSet) {
         fs.readFile('config.json', 'utf8', (err, data) => {
             if (err) {
                 console.log(err);
@@ -151,7 +151,7 @@ client.on("message", function (message) {
         });
     }
 
-    if (command === Commands.pm2.describe) {
+    if (command === Command.pm2.describe) {
         pm2.connect(function (err) {
             if (err) {
                 console.error(err);
@@ -191,7 +191,9 @@ client.on("message", function (message) {
         });
     }
 
-    if (command === Commands.pm2.list) {
+    console.log('command: ' + command)
+
+    if (command === Command.pm2.list) {
         pm2.connect(function (err) {
             pm2.list((err, list) => {
                 let output = "";
@@ -225,7 +227,7 @@ client.on("message", function (message) {
         });
     }
 
-    if (command === Commands.pm2.restart) {
+    if (command === Command.pm2.restart) {
         pm2.connect(function (err) {
             if (err) {
                 console.error(err);
@@ -245,7 +247,7 @@ client.on("message", function (message) {
         });
     }
 
-    if (command === Commands.pm2.reload) {
+    if (command === Command.pm2.reload) {
         pm2.connect(function (err) {
             if (err) {
                 console.error(err);
@@ -266,7 +268,7 @@ client.on("message", function (message) {
         });
     }
 
-    if (command === Commands.pm2.stop) {
+    if (command === Command.pm2.stop) {
         console.log('stopping');
 
         pm2.connect(function (err) {
@@ -289,7 +291,7 @@ client.on("message", function (message) {
         });
     }
 
-    if (command === Commands.pm2.delete) {
+    if (command === Command.pm2.delete) {
         console.log('deleting');
 
         pm2.connect(function (err) {
@@ -312,7 +314,7 @@ client.on("message", function (message) {
         });
     }
 
-    if (command === Commands.pm2.flush) {
+    if (command === Command.pm2.flush) {
         console.log('flushing');
 
         pm2.connect(function (err) {
@@ -335,7 +337,7 @@ client.on("message", function (message) {
         });
     }
 
-    if (command === Commands.pm2.reloadLogs) {
+    if (command === Command.pm2.reloadLogs) {
         console.log('reloading logs');
 
         pm2.connect(function (err) {
